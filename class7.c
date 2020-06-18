@@ -1,9 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>	//支持字符串操作
-//#include<Windows.h>
-//#include<mmsystem.h>
-//#pragma comment(lib,"Winmm.lib")
+#include<Windows.h>
+#include<mmsystem.h>
+#pragma comment(lib,"Winmm.lib")
 # define MAX 6	//常量MAX表示系统要求的最大妃子数量
 
 int main()
@@ -65,7 +65,8 @@ int main()
 	int levels[MAX] = { 1,2,0,0,0,-1 };
 	//loves数组中的每个元素对应每个妃子的好感度，初始情况，每个妃子的好感度都为100
 	int loves[MAX] = { 100,100,100,100,100 };
-
+	PlaySound(TEXT("bgm\\背景音乐.wav"),
+		NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
 
 	printf("\n******************************************\n");
@@ -94,6 +95,8 @@ int main()
 	case 1:	//1、黄帝下旨选妃；\t\t（增加功能）
 		//1、增加数组元素（names、loves、levels）
 		//2、增加前要判断数组有没有空间
+		PlaySound(TEXT("bgm\\选妃.wav"),
+			NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 		if (count < MAX)//如果当前的妃子数量小于系统的最大值
 		{
 			//执行添加操作
@@ -114,6 +117,8 @@ int main()
 		//2、修改这个妃子的状态   好感度+10   级别升一级，如果最高级就不再升级
 		//3、修改其他妃子的状态   好感度-10
 		//需要解决的bug：未支持姓名不存在的情况，请自行脑补完成
+		PlaySound(TEXT("bgm\\翻牌.wav"),
+			NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 		printf("陛下，请输入要今天翻牌娘娘的名讳：");
 		scanf_s("%s", tempName, 50);
 		//字符串的查找strcmp，需要引入<string.h>
@@ -139,6 +144,8 @@ int main()
 		//2.后面一个赋给前面一个元素
 		//3.总数
 		//4.修改其他妃子的状态，好感度+20
+		PlaySound(TEXT("bgm\\冷宫.wav"),
+			NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 		printf("陛下，请输入要打入冷宫的姓名：");
 		scanf_s("%s", tempName, 50);
 		for (i = 0; i < count; i++)
@@ -171,6 +178,8 @@ int main()
 		//1.查找
 		//2.增加好感度即可
 		//3.可以使用数组设计诗歌，使用随机数字的方式，表现皇帝的文采
+		PlaySound(TEXT("bgm\\一笑倾城.wav"),
+			NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 		printf("4、单独召见爱妃去小树林做纯洁的事。\n");
 		break;
 	defult:
