@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>	//支持字符串操作
 //#include<Windows.h>
 //#include<mmsystem.h>
 //#pragma comment(lib,"Winmm.lib")
@@ -47,13 +48,17 @@ int main()
 		NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 	system("pause");
 	*/
-	int i;
+	int i,j,temp;
 	int count = 5;		//当前未打入冷宫的嫔妃的个数
 	//使用字符数组表示字符串
 	char emperoName[50];	//皇帝的名号
 	int choice;				//皇帝的选择1-4
-	//嫔妃的姓名数组
-	char names[MAX][20] = { "貂蝉","杨玉环","不知火舞","西施","郭德纲" };
+	char tempName[50];		//用来存放临时字符串的字符数组
+	int searchIndex = -1;	//用来存放查找到元素的下标
+
+							
+							//嫔妃的姓名数组
+	char names[MAX] [50] = { "貂蝉","杨玉环","不知火舞","西施","郭德纲" };
 	//嫔妃的级别数组
 	char levelName[5][10] = { "贵人","嫔妃","贵妃","皇贵妃","皇后" };
 	//用来存放每位妃子的级别，每个数组元素对应每个妃子当前的等级
@@ -93,7 +98,7 @@ int main()
 		{
 			//执行添加操作
 			printf("请输入娘娘的名讳：");
-			gets( names[count] );
+			scanf_s("%s", names[count], 50);
 			//将第count个元素的状态初始化
 			levels[count] = 0;	//级别初始为0
 			loves[count] = 100;	//好感度初始为0
@@ -104,17 +109,93 @@ int main()
 			printf("陛下，要注意龙体啊，后宫已经人满为患了！\n添加失败！\n");
 		}
 		break;
-	case 2:
-		printf("2、翻牌宠幸；\t\t（修改状态功能）\n");
+	case 2://翻牌宠幸；\t\t（修改状态功能）
+		//1、找到要宠幸妃子的下标
+		//2、修改这个妃子的状态   好感度+10   级别升一级，如果最高级就不再升级
+		//3、修改其他妃子的状态   好感度-10
+		//需要解决的bug：未支持姓名不存在的情况，请自行脑补完成
+		printf("陛下，请输入要今天翻牌娘娘的名讳：");
+		scanf_s("%s", tempName, 50);
+		//字符串的查找strcmp，需要引入<string.h>
+		//strcmp(tempName,"abc")	0-两个字符串相等；1-前一个大于后一个；-1-前一个小于后一个
+		
+		for (i = 0; i < count; i++)
+		{
+			if (strcmp(tempName, names[i]) == 0)	//如果输入的姓名刚好等于数组中的某个名字
+			{
+				loves[i] += 10;
+				//特别要注意，不能超过5级（0-4之间）
+				levels[i] = levels[i] >= 4 ? 4 : levels[i] + 1;
+			}
+			else
+			{
+				loves[i] -= 10;
+			}
+		}
+
 		break;
-	case 3:
-		printf("3、打入冷宫！\t\t（删除功能）\n");
+	case 3://打入冷宫！（删除功能）
+		//1.查找
+		//2.后面一个赋给前面一个元素
+		//3.总数
+		//4.修改其他妃子的状态，好感度+20
+		printf("陛下，请输入要打入冷宫的姓名：");
+		scanf_s("%s", tempName, 50);
+		for (i = 0; i < count; i++)
+		{
+			if (strcmp(tempName, names[i]) == 0)	//比较字符串是否相等
+			{
+				//记录下要查找的下标
+				searchIndex = i;
+				break;
+			}
+		}
+		if (-1 == searchIndex)	//如果searchindex的值未初值-1，表示没有找到
+		{
+			printf("虚惊一场，无人打入冷宫，该吃吃该喝喝。\n");
+		}
+		else
+		{
+			for (i = searchIndex; i < count - 1; i++)
+			{
+				//names[i] = names[i + 1];	//因为是字符数组，c语言不支持数组的直接赋值
+				//我们需要使用strcpy函数实现数组的赋值
+				strcpy_s(names[i],50, names[i + 1],50);
+				loves[i] = loves[i + 1];
+				levels[i] = levels[i + 1];
+			}
+			count--;
+		}
 		break;
-	case 4:
+	case 4:	//单独召见爱妃去小树林做纯洁的事。
+		//1.查找
+		//2.增加好感度即可
+		//3.可以使用数组设计诗歌，使用随机数字的方式，表现皇帝的文采
 		printf("4、单独召见爱妃去小树林做纯洁的事。\n");
 		break;
 	defult:
 		printf("君无戏言，陛下请再次确认！");
+	}
+	//最后打印所有妃子状态前，以级别进行排序,使用冒泡排序
+	for (i = 0; i < count - 1; i++)
+	{
+		for (j = 0; j < count - i - 1; j++);
+		{
+			if (levels[j] < levels[j + 1])
+			{
+				//需要交换姓名，级别和好感度
+				temp = levels[j];
+				levels[j] = levels[j + 1];
+				levels[j + 1] = temp;
+				temp = loves[j];
+				loves[j] = loves[j + 1];
+				loves[j + 1] = temp;
+				//注意字符串的交换
+				strcpy_s(tempName, 50, names[i], 50);
+				strcpy_s(names[i], 50, names[i+1], 50);
+				strcpy_s(names[i+1], 50, tempName, 50);
+			}
+		}
 	}
 	printf("\n******************************************\n");
 	printf("测试代码，查看当前嫔妃的状态\n");
